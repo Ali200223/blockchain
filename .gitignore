@@ -37,4 +37,15 @@ logger_vm.py
 scheduler_core.py
 vm_message_client.py
 
-*.zip
+*.zipcd E:\blockchain
+
+# list tracked zip files
+git ls-files "*.zip"
+
+# untrack all tracked zip files (works for nested folders too)
+git ls-files "*.zip" | % { git rm --cached -- "$_" }
+
+git add .gitignore
+git commit -m "Remove zip artifacts and ignore .zip"
+git push
+
