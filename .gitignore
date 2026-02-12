@@ -30,3 +30,11 @@ uploads/
 Thumbs.db
 .vscode/
 .idea/
+
+
+fech_req.py
+logger_vm.py
+scheduler_core.py
+vm_message_client.py
+
+*.zip
