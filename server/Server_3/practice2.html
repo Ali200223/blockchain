@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>multiplication and division</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <input type="number" id="num1" placeholder="enter the first number"><br/>
+    <input type="number" id="num2" placeholder="enter the second number"><br/>
+    <input type="button" id="submit" value="Calculate"><br/>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('submit').addEventListener('click', function() {
+            const a = parseFloat(document.getElementById('num1').value) || 0;
+            const b = parseFloat(document.getElementById('num2').value) || 0;
+            const multiplication = a * b;
+            const division = (b === 0) ? 'Cannot divide by zero' : (a / b);
+            document.getElementById('result').textContent = `Multiplication: ${multiplication}  |  Division: ${division}`;
+        });
+    </script>
+</body>
+</html>

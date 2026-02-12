@@ -1,0 +1,118 @@
+“Secure Blockchain-Based Web Platform for Cryptocurrency Market Analytics, Trading Simulation, and ML-Driven Insights”
+The project has been carefully redesigned to be balanced across all three required functional categories:
+Data / Repository / CRUD-based features,
+Third-party services, and
+Truly complex custom logic, implemented mainly by us.
+We also plan to adopt an Agile incremental development process.
+1. Data Sources (Dataset Justification)
+The system will rely on three categories of data:
+External Market Data (Primary Dataset)
+Historical and real-time OHLCV (Open, High, Low, Close, Volume) data for selected cryptocurrencies.
+Data will be collected through public crypto market APIs and stored locally to form our own time-series dataset for ML training and testing.
+User-Generated & System Data
+Simulated transactions, user portfolios, backtest results, ML predictions, and risk metrics stored in our database.
+Security & Audit Data
+Login activity, session patterns, failed attempts, and anomaly scores for security monitoring.
+This ensures that the ML models are trained on a dataset constructed and maintained by us, not only on pretrained external data.
+2. Data / Repository / CRUD Functionalities
+These features are mainly repository-driven and implemented using standard DB logic:
+User accounts, authentication profiles, and risk preferences
+Crypto portfolios and holdings
+Simulated buy/sell transactions (paper trading)
+Watchlists and favorite coins
+Historical market data storage
+ML prediction records and analytics logs
+Security and audit logs
+These modules consist mainly of structured storage, retrieval, and updates, and therefore belong clearly to the DB/CRUD category.
+3. Third-Party Services & Libraries
+The following external services and tools will be integrated but not implemented by us:
+Crypto Market APIs for live and historical price/volume data
+ML libraries (e.g., scikit-learn / similar) for model training and inference
+Charting & Visualization libraries for financial dashboards
+Security libraries for hashing, token-based authentication, and secure APIs
+These components provide infrastructure and primitives, while all decision logic and workflows are implemented by us.
+4. Complex Custom Logic (Main Technical Contribution)
+To ensure that complex functionalities are not reduced to formulas or black-box pretrained models, we explicitly introduce custom multi-step algorithmic workflows, including:
+4.1 Custom Machine Learning Pipeline for Price Projections
+Construction of a custom dataset from raw OHLCV data.
+Manual feature engineering: log-returns, rolling volatility, moving averages, momentum indicators, volume anomalies.
+Training and comparison of multiple regression and classification models.
+Custom evaluation logic using directional accuracy and simulated profit-based metrics.
+Integration of real-time inference into the web platform.
+This is a fully student-implemented ML workflow, not a simple pretrained service call.
+4.2 Trading Strategy Backtesting Engine
+Users define rule-based strategies (e.g., moving-average crossovers, stop-loss rules).
+A custom event-driven simulator replays historical data.
+The engine computes:
+Returns
+Drawdowns
+Risk-adjusted performance indicators
+This module requires non-trivial simulation logic and state management.
+4.3 Portfolio Risk & Scenario Analysis Engine
+Computation of:
+Portfolio volatility
+Correlation-based diversification
+Concentration risk
+Custom what-if shock propagation over multiple assets.
+Automatic risk classification (low/medium/high) based on multiple criteria.
+This goes beyond simple formulas and involves multi-step analytical workflows.
+4.4 Security Anomaly Detection & Session Risk Scoring
+Custom extraction of behavioral security features:
+Login frequency
+IP changes
+Transaction irregularities
+Hybrid rule-based + ML-based anomaly detection.
+Generation of real-time security risk scores and alerts.
+This is a custom security intelligence layer, not a library-only feature.
+4.5 Internal Blockchain-Style Ledger for Integrity
+Design of a block structure with:
+Transaction batches
+Hash of previous block
+Periodic hash-chain validation to detect tampering.
+Admin-side integrity audit checks.
+This provides a custom blockchain integrity mechanism integrated into the system.
+4.6 Alert & Recommendation Aggregation Engine
+Aggregates outputs from:
+ML predictions
+Risk engine
+Security anomaly detection
+Produces prioritized system and portfolio alerts using a custom decision workflow.
+5. Web Application Functionalities
+From the end-user perspective, the system will provide:
+Secure user authentication and dashboards
+Live crypto market tracking
+Portfolio and transaction management
+Strategy creation and backtesting
+ML-based projections and insights
+Portfolio risk analysis and scenarios
+Security monitoring and blockchain integrity verification
+6. Software Development Process (Agile)
+We will follow an Agile incremental approach, structured into major increments:
+Increment 1: DB schema, CRUD features, authentication
+Increment 2: API integrations and visualization
+Increment 3: ML pipeline, backtesting, and analytics
+Increment 4: Security anomaly detection and blockchain ledger
+
+
+
+4.1 – Machine Learning for Price Projections
+We now implement a fully custom ML pipeline starting from raw OHLCV data. The system performs manual feature engineering (returns, volatility, momentum, volume anomalies), trains multiple ML models, evaluates them using both directional accuracy and profit-based metrics, and exposes real-time predictions through a dedicated ML microservice integrated into the web platform. The crawler will enrich this module with event-based signals derived from crypto-related news and regulatory updates.
+4.2 – Trading Strategy Back testing
+A custom event-driven back testing engine replays historical market data and evaluates user-defined strategies. The engine computes equity curves, drawdowns, and risk-adjusted performance indicators. The crawler-driven stress events are also injected into historical simulations to evaluate strategy robustness under real-world shocks.
+4.3 – Portfolio Risk & Scenario Analysis
+We have extended the scenario engine beyond simple static shocks. The system now includes correlation-based multi-asset shock propagation and news-driven stress scenarios extracted by the crawler (e.g., exchange hacks, regulatory announcements). This allows dynamic generation of worst-case, neutral, and best-case scenario trees.
+4.4 – Security Anomaly Detection
+The security layer now goes beyond basic logging. We extract behavioural features such as login velocity, IP drift, device changes, and transaction irregularities. These are analysed using a hybrid rule-based and ML-based anomaly detection model to generate real-time session risk scores and security alerts.
+4.6 – Alert & Recommendation Aggregation Engine
+We implement a weighted decision engine that aggregates outputs from:
+ML price projections,
+portfolio risk scores,
+security anomaly scores,
+and crawler-based news severity signals.
+This engine produces prioritized alerts using custom ranking and de-duplication logic rather than a simple notification system.
+Web Crawler Integration (Core Module)
+As you suggested, the crawler is now a central system component. It continuously collects crypto-related news, regulatory updates, and major market events. Its outputs directly feed:
+scenario generation,
+back testing stress tests,
+alert prioritization,
+and ML data enrichment.

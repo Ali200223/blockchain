@@ -1,0 +1,27 @@
+$base = "http://127.0.0.1:5000"
+$deviceId = "dev-1"
+
+$userEmail = "e_b_e_user_23@example.com"
+$userPass  = "Test1234!Test1234!"
+
+
+$userLogin = Invoke-RestMethod -Method Post -Uri "$base/api/auth/login" `
+  -Headers @{ "x-device-id" = $deviceId } `
+  -ContentType "application/json" `
+  -Body (@{ email=$userEmail; password=$userPass } | ConvertTo-Json)
+
+$userToken = $userLogin.tokens.access
+$userToken
+
+
+
+$adminEmail = "admin@example.com"
+$adminPass  = "Admin1234!Admin"
+
+$adminLogin = Invoke-RestMethod -Method Post -Uri "$base/api/auth/login" `
+  -Headers @{ "x-device-id" = $deviceId } `
+  -ContentType "application/json" `
+  -Body (@{ email=$adminEmail; password=$adminPass } | ConvertTo-Json)
+
+$adminToken = $adminLogin.tokens.access
+$adminToken

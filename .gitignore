@@ -1,0 +1,32 @@
+# secrets
+.env
+**/.env
+
+# logs
+*.log
+
+# dependencies
+node_modules/
+**/node_modules/
+
+# python venv / caches
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# build / coverage
+dist/
+build/
+coverage/
+
+# uploads (common for your project)
+uploads/
+**/uploads/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

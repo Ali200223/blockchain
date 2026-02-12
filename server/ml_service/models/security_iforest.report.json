@@ -1,0 +1,37 @@
+{
+  "trainedAt": "2026-01-26T20:56:42Z",
+  "input": {
+    "path": "E:\\blockchain\\server\\ml_service\\security_features.jsonl",
+    "nReal": 8,
+    "nSynth": 1492,
+    "targetTrain": 1500,
+    "widenedSynthetic": true
+  },
+  "model": {
+    "type": "IsolationForest",
+    "n_estimators": 300,
+    "contamination": 0.02,
+    "seed": 1337,
+    "log1p": true
+  },
+  "features": [
+    "login_fail_15m",
+    "login_success_5m",
+    "login_success_1h",
+    "distinct_ip_24h",
+    "distinct_ip_7d",
+    "distinct_ua_7d",
+    "distinct_device_30d",
+    "ipDrift",
+    "uaDrift"
+  ],
+  "baselineSource": "mixed",
+  "decisionFunction": {
+    "norm_p10": 0.08381695154166785,
+    "norm_p50": 0.19770390755930997,
+    "norm_p90": 0.27600052748915144,
+    "anom_p10": -0.05898715959138385,
+    "anom_p50": 0.00617756911847922,
+    "anom_p90": 0.07759418739623733
+  }
+}

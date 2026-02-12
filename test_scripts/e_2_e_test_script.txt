@@ -1,0 +1,109 @@
+$ErrorActionPreference = "Stop"
+
+$base = "http://127.0.0.1:5000"
+$deviceId = "dev-1"
+
+# ---- fill these from your Node .env (ADMIN_SEED_*) ----
+$adminEmail = "admin@example.com"
+$adminPassword = "Admin1234!Admin"
+# ------------------------------------------------------
+
+function Hdr($token) {
+  $h = @{ "x-device-id" = $deviceId }
+  if ($token) { $h["Authorization"] = "Bearer $token" }
+  return $h
+}
+
+Write-Host "`n[1] Health checks"
+Invoke-RestMethod -Method Get -Uri "$base/health" | ConvertTo-Json -Depth 5
+Invoke-RestMethod -Method Get -Uri "http://127.0.0.1:8000/health" | ConvertTo-Json -Depth 5
+
+# unique user
+$stamp = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+$userEmail = "e_n_e_user_23@example.com"
+$userPass  = "Test1234!Test1234!"
+$userPhone = "TMP$stamp"
+
+Write-Host "`n[2] Register user: $userEmail"
+$reg = Invoke-RestMethod -Method Post -Uri "$base/api/auth/register" `
+  -Headers (Hdr $null) -ContentType "application/json" `
+  -Body (@{ email=$userEmail; password=$userPass; phone=$userPhone } | ConvertTo-Json)
+$reg | ConvertTo-Json -Depth 6
+
+$userId = $reg.user.id
+
+Write-Host "`n[3] Login user"
+$login = Invoke-RestMethod -Method Post -Uri "$base/api/auth/login" `
+  -Headers (Hdr $null) -ContentType "application/json" `
+  -Body (@{ email=$userEmail; password=$userPass } | ConvertTo-Json)
+$login | ConvertTo-Json -Depth 6
+
+$userToken = $login.tokens.access
+
+Write-Host "`n[4] KYC status (before submit)"
+Invoke-RestMethod -Method Get -Uri "$base/api/kyc/status" -Headers (Hdr $userToken) | ConvertTo-Json -Depth 6
+
+Write-Host "`n[5] Submit KYC (PASSPORT)"
+$kycSubmit = Invoke-RestMethod -Method Post -Uri "$base/api/kyc/submit" `
+  -Headers (Hdr $userToken) -ContentType "application/json" `
+  -Body (@{
+    fullName="E2E Test User"
+    dob="1999-01-01"
+    country="US"
+    docType="PASSPORT"
+    docNumber="P$stamp"
+  } | ConvertTo-Json)
+$kycSubmit | ConvertTo-Json -Depth 6
+
+Write-Host "`n[6] Admin login"
+$adminLogin = Invoke-RestMethod -Method Post -Uri "$base/api/auth/login" `
+  -Headers (Hdr $null) -ContentType "application/json" `
+  -Body (@{ email=$adminEmail; password=$adminPassword } | ConvertTo-Json)
+$adminToken = $adminLogin.tokens.access
+
+Write-Host "`n[7] Admin approve KYC"
+$review = Invoke-RestMethod -Method Post -Uri "$base/api/kyc/admin/review" `
+  -Headers (Hdr $adminToken) -ContentType "application/json" `
+  -Body (@{ userId=$userId; decision="APPROVE"; notes="E2E approve" } | ConvertTo-Json)
+$review | ConvertTo-Json -Depth 6
+
+Write-Host "`n[8] Wallet should now be ACTIVE"
+$w1 = Invoke-RestMethod -Method Get -Uri "$base/api/wallet/me" -Headers (Hdr $userToken)
+$w1 | ConvertTo-Json -Depth 6
+
+Write-Host "`n[9] Admin deposit (idempotent referenceId)"
+$ref = [guid]::NewGuid().ToString()
+$adj = Invoke-RestMethod -Method Post -Uri "$base/api/wallet/admin/adjust" `
+  -Headers (Hdr $adminToken) -ContentType "application/json" `
+  -Body (@{
+    userId=$userId
+    type="DEPOSIT"
+    amount=100
+    description="E2E deposit"
+    referenceId=$ref
+  } | ConvertTo-Json)
+$adj | ConvertTo-Json -Depth 6
+
+Write-Host "`n[10] Wallet + transactions"
+Invoke-RestMethod -Method Get -Uri "$base/api/wallet/me" -Headers (Hdr $userToken) | ConvertTo-Json -Depth 6
+Invoke-RestMethod -Method Get -Uri "$base/api/wallet/transactions?limit=20" -Headers (Hdr $userToken) | ConvertTo-Json -Depth 10
+
+Write-Host "`n[11] ML prediction (normal)"
+$mlOk = Invoke-RestMethod -Method Post -Uri "$base/api/ml/price-prediction" `
+  -Headers (Hdr $userToken) -ContentType "application/json" `
+  -Body (@{ symbols=@("BTCUSDT","ETHUSDT"); interval="1h"; horizon=24; includePropagation=$true } | ConvertTo-Json)
+$mlOk | ConvertTo-Json -Depth 10
+
+Write-Host "`n[12] ML debug injection should be blocked (expect 403)"
+try {
+  Invoke-RestMethod -Method Post -Uri "$base/api/ml/price-prediction" `
+    -Headers (Hdr $userToken) -ContentType "application/json" `
+    -Body (@{
+      symbols=@("BTCUSDT")
+      interval="1h"
+      horizon=24
+      debugFeatures=@{ BTCUSDT=@{ ret_1=0.01 } }
+    } | ConvertTo-Json -Depth 10)
+} catch {
+  Write-Host "Blocked as expected: $($_.Exception.Message)"
+}
