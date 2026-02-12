@@ -3,7 +3,7 @@ const { authJwt } = require("../../middlewares/authJwt");
 const { env } = require("../../config/env");
 const { runWeeklyMlTrainingOnce } = require("../../jobs/weeklyMlTraining.job");
 
-// admin gate similar to what you did elsewhere
+
 function requireAdmin(req, res, next) {
   const a = req.auth || {};
   const role = typeof a.role === "string" ? a.role.toLowerCase() : null;
@@ -24,7 +24,7 @@ function requireAdmin(req, res, next) {
 }
 
 router.post("/weekly-train/run", authJwt, requireAdmin, async (req, res) => {
-  // fire and forget, but respond immediately
+  
   runWeeklyMlTrainingOnce().catch(() => {});
   res.json({ ok: true, started: true });
 });
